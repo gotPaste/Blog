@@ -1,17 +1,15 @@
 ﻿<# 
 .SYNOPSIS: Script used to automate the ContentLibraryCleanup.exe and log the output. 
-.DESCRIPTION: Will identify the hostname and run contentlibrarycleanup.exe with approrpiate switches.  It will run in WhatIf mode
+.DESCRIPTION: Will identify the DPs in the environment and run contentlibrarycleanup.exe with approrpiate switches.  It will run in WhatIf mode
  first and then run in DELETE mode if WhatIF mode was successful. 
 .NOTES: Will Retry 4 times on each section (WhatIF and DELETE modes)  Will Log output to C:\Windows\Logs\ContentLibraryCleanup\ 
-.COMPONENT: SCCM Console needs to be installed on the same machine,  ContentLibraryCleanup.exe and this script need to reside in the same directory. 
+.COMPONENT: ContentLibraryCleanup.exe and this script need to reside in the same directory. SCCM Console needs to be installed on same machine.
 .LINK 
  https://docs.microsoft.com/en-us/mem/configmgr/core/plan-design/hierarchy/content-library-cleanup-tool
  https://fritscheonline.blogspot.com
 .EXAMPLE: powershell.exe -executionpolicy bypass -file ".\ContentLibraryCleanup.ps1" 
 .CREATOR: Tom Fritsche 
 #>
-
-
 
 #------------SCCM Module Code-------------------------
 #
