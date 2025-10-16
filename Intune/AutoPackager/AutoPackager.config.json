@@ -1,0 +1,99 @@
+{
+  "Branding": {
+    "NotificationBrandTitle": "COMPANY NAME HERE"
+  },
+  "Email": {
+    "To": [
+    ],
+    "From": "",
+    "SubjectPrefix": "Intune AutoPackager",
+    "AttachCsv": false,
+    "AttachLog": true,
+    "SendPolicy": "updatesOrFailures",
+    "Smtp": {
+      "Server": "",
+      "Port": 587,
+      "UseSsl": true,
+      "User": "",
+      "ApiKeyEnv": "SENDGRID_API_KEY",
+      "ApiKey": "",
+      "Password": null
+    }
+  },
+  "AzureAuth": {
+    "TenantId": "",
+    "ClientId": "",
+    "ClientSecret": "",
+    "CertificateThumbprint": null
+  },
+  "GitHubToken": "",
+  "Paths": {
+    "WorkingRoot": "Working",
+    "LogPath": "AutoPackager.log",
+    "RecipesRoot": "Recipes",
+    "IntuneWinAppUtil": null,
+    "DefaultIconFolder": "",
+    "RecipeNetworkFolder": ""
+  },
+  "PackagingDefaults": {
+    "PreferArchitecture": "x64",
+    "DefaultScope": "machine",
+    "WingetSource": "winget",
+    "RunMode": "PackageOnly",
+    "AllRecipes": false,
+    "UpdateDetection": true,
+    "UseScriptCommandLines": true
+  },
+  "IntuneUploadVerify": {
+    "TimeoutSeconds": 600,
+    "IntervalSeconds": 10,
+    "StrictVerify": false,
+    "SkipVerify": false,
+    "SizeTolerancePercent": 5
+  },
+  "AllowAvailableUninstall": true,
+  "Notification": {
+    "Defaults": {
+      "Enabled": false,
+      "TimerMinutes": 2,
+      "DeferralEnabled": false,
+      "DeferralHoursAllowed": 24
+    }
+  },
+  "SecondaryRequiredApp": {
+    "DisplayNameSuffix": " - Required Update",
+    "AssignmentDefaults": {
+      "Intent": "required",
+      "Notifications": "showAll",
+      "DeliveryOptimizationPriority": "notConfigured",
+      "ClearExistingBeforeAssign": true,
+      "Deadline": {
+        "HourOfDay": 23,
+        "MinuteOfHour": 59
+      }
+    }
+  },
+  "RequiredUpdateDefaultGroups": {
+    "PilotGroup": "",
+    "PilotFilter": "",
+    "PilotFilterType": "Include",
+    "PilotDelayDays": 1,
+    "UATGroup": "",
+    "UATFilter": "",
+    "UATFilterType": "Include",
+    "UATDelayDays": 5,
+    "GAGroup": "",
+    "GAFilter": "",
+    "GAFilterType": "Include",
+    "GADelayDays": 9
+  },
+  "Archive": {
+    "Enabled": true,
+    "NetworkArchiveRoot": "",
+    "RetentionDays": 14,
+    "KeepVersionsPerApp": 3
+  },
+  "Cleanup": {
+    "PurgeWorkingOnStart": true
+  }
+}
