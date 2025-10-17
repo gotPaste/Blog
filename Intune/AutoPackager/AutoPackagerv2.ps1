@@ -4534,6 +4534,26 @@ try {
     }
 
 Write-Log "$resolvedName | Intune version: '$currentVersion' | Winget: '$wingetVersion'" 'INFO'
+if (-not $DryRun -and -not $script:EffectivePackageOnly) {
+    if ([string]::IsNullOrWhiteSpace($currentVersion)) {
+        $errText = "No Intune version found for primary app (displayVersion is null or blank)."
+        Write-Log ("{0} | {1}" -f $resolvedName, $errText) 'ERROR'
+        $failures.Add([pscustomobject]@{
+            App          = $resolvedName
+            WingetId     = $wingetId
+            Stage        = 'Precheck'
+            ErrorMessage = $errText
+        }) | Out-Null
+        $summary.Add([PSCustomObject]@{
+            App    = $resolvedName
+            Intune = $currentVersion
+            Winget = $wingetVersion
+            Action = 'Failed'
+            Notes  = $errText
+        }) | Out-Null
+        continue
+    }
+}
 $cmp = if ($currentVersion) { Compare-VersionStrings -A $wingetVersion -B $currentVersion } else { 1 }
 if ($cmp -le 0) {
     if ($secondaryAppId -and $ReapplySecondaryAssignments) {
