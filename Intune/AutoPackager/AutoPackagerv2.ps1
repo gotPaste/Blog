@@ -615,7 +615,25 @@ function Get-WingetManifestInfoFromGitHub {
            $scopeMatches = $cands | Where-Object { $_.Scope -ieq $PreferScope }
            if ($scopeMatches.Count -gt 0) { $cands = $scopeMatches }
          }
-         # Weighted sort honoring DesiredInstallerType (from recipe); default preference remains MSI/WiX when not specified
+         # Apply installer type preference from caller (align with GUI behavior)
+         if ($DesiredInstallerType) {
+           try {
+             $pref = $DesiredInstallerType.ToString().ToLower()
+             $c3 = $null
+             if ($pref -eq 'msi') {
+               # Prefer MSI-like types; fallback to URL extension
+               $c3 = $cands | Where-Object { $_.InstallerType -and (($_.InstallerType.ToString().ToLower() -eq 'msi') -or ($_.InstallerType.ToString().ToLower() -eq 'wix')) }
+               if (-not $c3 -or $c3.Count -eq 0) { $c3 = $cands | Where-Object { $_.InstallerUrl -match '\.msi(\?|$)' } }
+             } else {
+               # Prefer non-MSI (exe-like) types e.g., exe/nullsoft/inno/burn; fallback to URL .exe
+               $c3 = $cands | Where-Object { $_.InstallerType -and (@('msi','wix') -notcontains ($_.InstallerType.ToString().ToLower())) }
+               if (-not $c3 -or $c3.Count -eq 0) { $c3 = $cands | Where-Object { $_.InstallerUrl -match '\.exe(\?|$)' } }
+             }
+             if ($c3 -and $c3.Count -gt 0) { $cands = $c3 }
+           } catch { }
+         }
+
+         # Sort by arch/scope preferences (type already filtered above when requested)
          $sorted = $cands | Sort-Object `
            @{ Expression = {
                  if ($PreferArchitecture) {
@@ -623,21 +641,16 @@ function Get-WingetManifestInfoFromGitHub {
                  } else { 0 }
                } }, `
            @{ Expression = {
-                 if ($DesiredInstallerType) {
-                   if ($_.InstallerType -ieq $DesiredInstallerType) { 0 } else { 1 }
-                 } else {
-                   if (@('wix','msi') -contains ($_.InstallerType)) { 0 } else { 1 }
-                 }
-               } }, `
-           @{ Expression = {
                  if ($PreferScope) {
                    if ($_.Scope -ieq $PreferScope) { 0 } else { 1 }
                  } else { 0 }
                } }
+
          $sel = $sorted | Select-Object -First 1
          if ($sel) {
            $selUrl  = $sel.InstallerUrl
-           $selType = $sel.InstallerType
+           # If type missing, infer from URL extension
+           $selType = if ($sel.InstallerType) { $sel.InstallerType } elseif ($sel.InstallerUrl -match '\.msi(\?|$)') { 'msi' } elseif ($sel.InstallerUrl -match '\.exe(\?|$)') { 'exe' } else { $null }
            $selArch = $sel.Architecture
            $selScope= $sel.Scope
            $yamlOk = $true
